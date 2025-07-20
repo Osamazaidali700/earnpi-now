@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EarnPi Now</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+<body>
+  <h1>Welcome to EarnPi Now</h1>
+  <button onclick="signInWithPi()">Sign in with Pi</button>
+  <script>
+    function signInWithPi() {
+      Pi.authenticate(['username'], function (auth) {
+        alert("Authenticated as: " + auth.user.username);
+      }, function (error) {
+        alert("Authentication failed: " + error);
+      });
+    }
+  </script>
+</body>
+</html>
