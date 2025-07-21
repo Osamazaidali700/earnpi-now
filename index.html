@@ -1,21 +1,24 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EarnPi Now</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
-  <h1>Welcome to EarnPi Now</h1>
-  <button onclick="signInWithPi()">Sign in with Pi</button>
-  <script>
-    function signInWithPi() {
-      Pi.authenticate(['username'], function (auth) {
-        alert("Authenticated as: " + auth.user.username);
-      }, function (error) {
-        alert("Authentication failed: " + error);
-      });
-    }
-  </script>
+  <div class="container">
+    <h1>Welcome to EarnPi Now</h1>
+    <p>Earn Pi by watching ads, completing offers, and downloading games!</p>
+
+    <button id="login-button">Login with Pi</button>
+
+    <div id="user-info" class="hidden">
+      <p>Logged in as: <span id="username"></span></p>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
 </body>
 </html>
