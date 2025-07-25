@@ -1,24 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>EarnPi Now</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script defer src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      color: #3f51b5;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Welcome to EarnPi Now</h1>
-    <p>Earn Pi by watching ads, completing offers, and downloading games!</p>
 
-    <button id="login-button">Login with Pi</button>
+  <h1>Welcome to EarnPi Now</h1>
+  <p>Earn Pi by watching ads, completing offers, and downloading games!</p>
 
-    <div id="user-info" class="hidden">
-      <p>Logged in as: <span id="username"></span></p>
-    </div>
-  </div>
+  <button onclick="loginWithPi()">Login with Pi</button>
+  <button onclick="startPayment()">Pay 0.001 Pi</button>
 
-  <script src="main.js"></script>
+  <script>
+    // تسجيل الدخول عبر Pi
+    function loginWithPi() {
+      Pi.authenticate(["username"], function (userInfo) {
+        console.log("Logged in user:", userInfo);
+        alert("Welcome, " + userInfo.username + "!");
+      }, function (error) {
+        console.error("Login failed:", error);
+      });
+    }
+
+    // بدء عملية الدفع
+    function startPayment() {
+      Pi.openPayment({
+        amount: 0.001,
+        memo: "Test payment from user to app",
+        metadata: { type: "test", itemId: "1234" },
+      }, {
+        onReadyForServerApproval: function (paymentId) {
+          console.log("Payment ready for server approval:", paymentId);
+        },
+        onReadyForServerCompletion: function (paymentId, txid) {
+          console.log("Payment complete with transaction ID:", txid);
+          alert("Payment successful! TxID: " + txid);
+        },
+        onCancel: function (paymentId) {
+          console.log("Payment cancelled:", paymentId);
+          alert("Payment was cancelled.");
+        },
+        onError: function (error, payment) {
+          console.error("Payment error:", error);
+          alert("An error occurred during payment.");
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>
