@@ -1,58 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>EarnPi Now</title>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 40px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
+  </style>
 </head>
-<body style="font-family: Arial; text-align: center; padding: 40px;">
-
-  <h1>Welcome to EarnPi Now</h1>
-  <p>Earn Pi by watching ads, completing offers, and downloading games!</p>
-
-  <button id="login-btn" style="padding: 10px 20px; font-size: 16px;">Login with Pi</button>
-  <br><br>
-  <button id="pay-btn" style="padding: 10px 20px; font-size: 16px;">Pay 0.001 Pi</button>
+<body>
+  <h1>EarnPi Now</h1>
+  <button id="login-btn">Login with Pi</button>
+  <button id="pay-btn">Pay 0.001 Pi</button>
 
   <script>
-    let piUser = null;
+    // تهيئة Pi SDK مع Sandbox
+    Pi.init({ version: "2.0", sandbox: true });
 
+    // تسجيل الدخول
     document.getElementById("login-btn").addEventListener("click", () => {
-      Pi.authenticate(['username'], function (auth) {
-        piUser = auth.user;
-        alert("تم تسجيل الدخول باسم: " + piUser.username);
-        console.log("Login successful:", auth);
-      }, function (error) {
-        alert("فشل تسجيل الدخول");
-        console.error("Login error:", error);
+      Pi.authenticate(['username'], (auth) => {
+        alert("Welcome, " + auth.user.username + "!");
+      }, (error) => {
+        alert("Error: " + error);
       });
     });
 
+    // الدفع
     document.getElementById("pay-btn").addEventListener("click", () => {
-      if (!piUser) {
-        alert("يرجى تسجيل الدخول أولاً!");
-        return;
-      }
-
       Pi.createPayment({
         amount: 0.001,
-        memo: "Test payment for EarnPi Now",
-        metadata: {type: "test", app: "EarnPi Now"}
+        memo: "Test payment"
       }, {
-        onReadyForServerApproval: function (paymentId) {
-          console.log("Ready for server approval", paymentId);
+        onReadyForServerApproval: (paymentId) => {
+          console.log("Payment approved:", paymentId);
         },
-        onReadyForServerCompletion: function (paymentId, txid) {
-          console.log("Ready for server completion", paymentId, txid);
+        onReadyForServerCompletion: (paymentId, txid) => {
+          alert("Payment done! TXID: " + txid);
         },
-        onCancel: function (paymentId) {
-          alert("تم إلغاء الدفع");
-          console.log("Payment cancelled", paymentId);
+        onCancel: () => {
+          alert("Payment cancelled");
         },
-        onError: function (error, payment) {
-          alert("حدث خطأ أثناء الدفع");
-          console.error("Payment error", error);
+        onError: (error) => {
+          alert("Error: " + error.message);
         }
       });
     });
