@@ -1,79 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EarnPi Now</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script defer src="https://sdk.minepi.com/pi-sdk.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-      background-color: #f0f0f0;
-    }
-    h1 {
-      color: #3f51b5;
-    }
-    button {
-      margin: 10px;
-      padding: 12px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-<body>
+<body style="font-family: Arial; text-align: center; padding: 40px;">
 
   <h1>Welcome to EarnPi Now</h1>
   <p>Earn Pi by watching ads, completing offers, and downloading games!</p>
 
-  <button onclick="loginWithPi()">Login with Pi</button>
-  <button onclick="startPayment()">Pay 0.001 Pi</button>
+  <button id="login-btn" style="padding: 10px 20px; font-size: 16px;">Login with Pi</button>
+  <br><br>
+  <button id="pay-btn" style="padding: 10px 20px; font-size: 16px;">Pay 0.001 Pi</button>
 
   <script>
-    // تسجيل الدخول عبر Pi
-    function loginWithPi() {
-      Pi.authenticate(["username"], function (userInfo) {
-        console.log("Logged in user:", userInfo);
-        alert("Welcome, " + userInfo.username + "!");
-      }, function (error) {
-        console.error("Login failed:", error);
-      });
-    }
+    let piUser = null;
 
-    // بدء عملية الدفع
-    function startPayment() {
-      Pi.openPayment({
+    document.getElementById("login-btn").addEventListener("click", () => {
+      Pi.authenticate(['username'], function (auth) {
+        piUser = auth.user;
+        alert("تم تسجيل الدخول باسم: " + piUser.username);
+        console.log("Login successful:", auth);
+      }, function (error) {
+        alert("فشل تسجيل الدخول");
+        console.error("Login error:", error);
+      });
+    });
+
+    document.getElementById("pay-btn").addEventListener("click", () => {
+      if (!piUser) {
+        alert("يرجى تسجيل الدخول أولاً!");
+        return;
+      }
+
+      Pi.createPayment({
         amount: 0.001,
-        memo: "Test payment from user to app",
-        metadata: { type: "test", itemId: "1234" },
+        memo: "Test payment for EarnPi Now",
+        metadata: {type: "test", app: "EarnPi Now"}
       }, {
         onReadyForServerApproval: function (paymentId) {
-          console.log("Payment ready for server approval:", paymentId);
+          console.log("Ready for server approval", paymentId);
         },
         onReadyForServerCompletion: function (paymentId, txid) {
-          console.log("Payment complete with transaction ID:", txid);
-          alert("Payment successful! TxID: " + txid);
+          console.log("Ready for server completion", paymentId, txid);
         },
         onCancel: function (paymentId) {
-          console.log("Payment cancelled:", paymentId);
-          alert("Payment was cancelled.");
+          alert("تم إلغاء الدفع");
+          console.log("Payment cancelled", paymentId);
         },
         onError: function (error, payment) {
-          console.error("Payment error:", error);
-          alert("An error occurred during payment.");
+          alert("حدث خطأ أثناء الدفع");
+          console.error("Payment error", error);
         }
       });
-    }
+    });
   </script>
-
 </body>
 </html>
