@@ -1,95 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Earn Pi coins by completing offers">
   <title>EarnPi Now</title>
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-      background-color: #f8f9fa;
-    }
-    h1 {
-      color: #14C5FB;
-    }
-    .btn {
-      padding: 12px 24px;
-      background-color: #14C5FB;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      margin: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.3s;
-    }
-    .btn:hover {
-      background-color: #0D9ECD;
-      transform: translateY(-2px);
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://sdk.minepi.com/pi-sdk.js" defer></script>
+  <script src="main.js" defer></script>
 </head>
 <body>
-  <h1>EarnPi Now</h1>
-  <p>Complete offers and earn Pi coins daily!</p>
-  
-  <button class="btn" id="piLoginBtn">Login with Pi</button>
-  <button class="btn" id="piPayBtn">Pay 0.001 Pi</button>
-
-  <script>
-    // Debug initialization
-    console.log("[DEBUG] Initializing Pi SDK...");
+  <div class="container">
+    <h1>EarnPi Now</h1>
+    <p>Complete offers and earn Pi coins daily!</p>
     
-    Pi.init({ 
-      version: "2.0",
-      sandbox: true
-    }).then(() => {
-      console.log("[SUCCESS] Pi SDK initialized");
-      
-      // Login Handler
-      document.getElementById("piLoginBtn").addEventListener("click", () => {
-        console.log("[EVENT] Login button clicked");
-        Pi.authenticate(['username'], (auth) => {
-          alert(`Welcome ${auth.user.username}!`);
-          console.log("[AUTH] Success:", auth);
-        }, (error) => {
-          alert("Login failed. Please try again.");
-          console.error("[AUTH] Error:", error);
-        });
-      });
-
-      // Payment Handler
-      document.getElementById("piPayBtn").addEventListener("click", () => {
-        console.log("[EVENT] Payment button clicked");
-        Pi.createPayment({
-          amount: 0.001,
-          memo: "Test payment"
-        }, {
-          onReadyForServerApproval: (paymentId) => {
-            console.log("[PAYMENT] Approved:", paymentId);
-          },
-          onReadyForServerCompletion: (paymentId, txid) => {
-            alert(`Payment completed! TXID: ${txid}`);
-            console.log("[PAYMENT] Completed:", txid);
-          },
-          onCancel: () => {
-            alert("Payment cancelled by user");
-            console.log("[PAYMENT] Cancelled");
-          },
-          onError: (error) => {
-            alert(`Payment error: ${error.message}`);
-            console.error("[PAYMENT] Error:", error);
-          }
-        });
-      });
-
-    }).catch((error) => {
-      alert("SDK initialization failed. Please refresh.");
-      console.error("[ERROR] SDK Init:", error);
-    });
-  </script>
+    <button class="btn" id="piLoginBtn">Login with Pi</button>
+    <button class="btn hidden" id="piPayBtn">Pay 0.001 Pi</button>
+    <div id="loading" class="hidden">Processing...</div>
+  </div>
 </body>
 </html>
