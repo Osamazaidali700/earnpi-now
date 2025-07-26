@@ -1,51 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
   <title>EarnPi Now</title>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <style>
     body { font-family: Arial; text-align: center; padding: 40px; }
-    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
+    button { 
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #14C5FB;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>EarnPi Now</h1>
-  <button id="login-btn">Login with Pi</button>
-  <button id="pay-btn">Pay 0.001 Pi</button>
+  
+  <button id="loginBtn">Login with Pi</button>
+  <button id="payBtn">Pay 0.001 Pi</button>
 
   <script>
-    // تهيئة Pi SDK مع Sandbox
-    Pi.init({ version: "2.0", sandbox: true });
-
-    // تسجيل الدخول
-    document.getElementById("login-btn").addEventListener("click", () => {
-      Pi.authenticate(['username'], (auth) => {
-        alert("Welcome, " + auth.user.username + "!");
-      }, (error) => {
-        alert("Error: " + error);
+    // تهيئة SDK مع Sandbox
+    Pi.init({ 
+      version: "2.0", 
+      sandbox: true 
+    }).then(() => {
+      console.log("Pi SDK initialized!");
+      
+      // تسجيل الدخول
+      document.getElementById("loginBtn").addEventListener("click", () => {
+        Pi.authenticate(['username'], (auth) => {
+          alert("تم التسجيل بنجاح! اسم المستخدم: " + auth.user.username);
+        }, (error) => {
+          alert("فشل التسجيل: " + error);
+        });
       });
-    });
 
-    // الدفع
-    document.getElementById("pay-btn").addEventListener("click", () => {
-      Pi.createPayment({
-        amount: 0.001,
-        memo: "Test payment"
-      }, {
-        onReadyForServerApproval: (paymentId) => {
-          console.log("Payment approved:", paymentId);
-        },
-        onReadyForServerCompletion: (paymentId, txid) => {
-          alert("Payment done! TXID: " + txid);
-        },
-        onCancel: () => {
-          alert("Payment cancelled");
-        },
-        onError: (error) => {
-          alert("Error: " + error.message);
-        }
+      // الدفع
+      document.getElementById("payBtn").addEventListener("click", () => {
+        Pi.createPayment({
+          amount: 0.001,
+          memo: "Test payment"
+        }, {
+          onReadyForServerApproval: (paymentId) => {
+            console.log("Payment approved:", paymentId);
+          },
+          onReadyForServerCompletion: (paymentId, txid) => {
+            alert("تم الدفع بنجاح! رقم المعاملة: " + txid);
+          },
+          onCancel: () => {
+            alert("تم إلغاء الدفع");
+          },
+          onError: (error) => {
+            alert("خطأ في الدفع: " + error.message);
+          }
+        });
       });
+
+    }).catch((error) => {
+      alert("خطأ في تهيئة Pi SDK: " + error);
+      console.error("SDK Error:", error);
     });
   </script>
 </body>
