@@ -4,66 +4,91 @@
   <title>EarnPi Now</title>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <style>
-    body { font-family: Arial; text-align: center; padding: 40px; }
-    button { 
+    body {
+      font-family: 'Arial', sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      color: #14C5FB;
+    }
+    .btn {
       padding: 12px 24px;
-      font-size: 16px;
       background-color: #14C5FB;
       color: white;
       border: none;
       border-radius: 8px;
       margin: 10px;
       cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background-color: #0D9ECD;
+      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
   <h1>EarnPi Now</h1>
+  <p>Complete offers and earn Pi coins daily!</p>
   
-  <button id="loginBtn">Login with Pi</button>
-  <button id="payBtn">Pay 0.001 Pi</button>
+  <button class="btn" id="piLoginBtn">Login with Pi</button>
+  <button class="btn" id="piPayBtn">Pay 0.001 Pi</button>
 
   <script>
-    // تهيئة SDK مع Sandbox
+    // Debug initialization
+    console.log("[DEBUG] Initializing Pi SDK...");
+    
     Pi.init({ 
-      version: "2.0", 
-      sandbox: true 
+      version: "2.0",
+      sandbox: true
     }).then(() => {
-      console.log("Pi SDK initialized!");
+      console.log("[SUCCESS] Pi SDK initialized");
       
-      // تسجيل الدخول
-      document.getElementById("loginBtn").addEventListener("click", () => {
+      // Login Handler
+      document.getElementById("piLoginBtn").addEventListener("click", () => {
+        console.log("[EVENT] Login button clicked");
         Pi.authenticate(['username'], (auth) => {
-          alert("تم التسجيل بنجاح! اسم المستخدم: " + auth.user.username);
+          alert(`Welcome ${auth.user.username}!`);
+          console.log("[AUTH] Success:", auth);
         }, (error) => {
-          alert("فشل التسجيل: " + error);
+          alert("Login failed. Please try again.");
+          console.error("[AUTH] Error:", error);
         });
       });
 
-      // الدفع
-      document.getElementById("payBtn").addEventListener("click", () => {
+      // Payment Handler
+      document.getElementById("piPayBtn").addEventListener("click", () => {
+        console.log("[EVENT] Payment button clicked");
         Pi.createPayment({
           amount: 0.001,
           memo: "Test payment"
         }, {
           onReadyForServerApproval: (paymentId) => {
-            console.log("Payment approved:", paymentId);
+            console.log("[PAYMENT] Approved:", paymentId);
           },
           onReadyForServerCompletion: (paymentId, txid) => {
-            alert("تم الدفع بنجاح! رقم المعاملة: " + txid);
+            alert(`Payment completed! TXID: ${txid}`);
+            console.log("[PAYMENT] Completed:", txid);
           },
           onCancel: () => {
-            alert("تم إلغاء الدفع");
+            alert("Payment cancelled by user");
+            console.log("[PAYMENT] Cancelled");
           },
           onError: (error) => {
-            alert("خطأ في الدفع: " + error.message);
+            alert(`Payment error: ${error.message}`);
+            console.error("[PAYMENT] Error:", error);
           }
         });
       });
 
     }).catch((error) => {
-      alert("خطأ في تهيئة Pi SDK: " + error);
-      console.error("SDK Error:", error);
+      alert("SDK initialization failed. Please refresh.");
+      console.error("[ERROR] SDK Init:", error);
     });
   </script>
 </body>
