@@ -82,3 +82,4 @@ const verifyPayment = async (paymentId) => {
 
 // Initialize App
 document.addEventListener("DOMContentLoaded", initApp);
+window.addEventListener("load", initApp);
